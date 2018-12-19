@@ -19,23 +19,21 @@ MainWindow::MainWindow(QWidget *parent) :
         qDebug("%s[%d] open pinyin dictionary failed", __func__, __LINE__);
         return;
     }
-
-    ime_pinyin::im_set_max_lens(1, 36);
-    size_t qty = ime_pinyin::im_search("zgr", 3);
-    ime_pinyin::char16 buf[256] = {0};
-
-    qDebug("%s[%d] qty(%d)", __func__, __LINE__, qty);
-    for (int i = 0; i < qty; ++i) {
-        ime_pinyin::im_get_candidate(i, buf, 255);
-
-        qDebug() << QString::fromUtf16(buf);
-    }
-
-    qDebug() << buf;
-
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_lineEdit_textChanged(const QString &arg1)
+{
+    size_t qty = ime_pinyin::im_search(arg1.toUtf8().data(), arg1.size());
+    ime_pinyin::char16 buf[256] = {0};
+    QString msg;
+    for (size_t i = 0; i < 100; ++i) {
+        ime_pinyin::im_get_candidate(i, buf, 255);
+        msg.append(QString::fromUtf16(buf)+" ");
+    }
+    ui->textBrowser->setText(msg);
 }
