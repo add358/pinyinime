@@ -23,7 +23,7 @@
 namespace ime_pinyin {
 
 // Enable the following line when building the binary dictionary model.
- #define ___BUILD_MODEL___
+// #define ___BUILD_MODEL___
 
 typedef unsigned char      uint8;
 typedef unsigned short     uint16;

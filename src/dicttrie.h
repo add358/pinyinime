@@ -22,6 +22,7 @@
 #include "./dictdef.h"
 #include "./dictlist.h"
 #include "./searchutility.h"
+#include <QFile>
 
 namespace ime_pinyin {
 
@@ -73,15 +74,15 @@ class DictTrie : AtomDictBase {
   // root_[splid_le0_index_[splid - kFullSplIdStart]]
   uint16 *splid_le0_index_;
 
-  size_t lma_node_num_le0_;
-  size_t lma_node_num_ge1_;
+  uint32 lma_node_num_le0_;
+  uint32 lma_node_num_ge1_;
 
   // The first part is for homophnies, and the last  top_lma_num_ items are
   // lemmas with highest scores.
   unsigned char *lma_idx_buf_;
-  size_t lma_idx_buf_len_;  // The total size of lma_idx_buf_ in byte.
-  size_t total_lma_num_;    // Total number of lemmas in this dictionary.
-  size_t top_lmas_num_;     // Number of lemma with highest scores.
+  uint32 lma_idx_buf_len_;  // The total size of lma_idx_buf_ in byte.
+  uint32 total_lma_num_;    // Total number of lemmas in this dictionary.
+  uint32 top_lmas_num_;     // Number of lemma with highest scores.
 
   // Parsing mark list used to mark the detailed extended statuses.
   ParsingMark *parsing_marks_;
@@ -105,7 +106,7 @@ class DictTrie : AtomDictBase {
 
   void free_resource(bool free_dict_list);
 
-  bool load_dict(FILE *fp);
+  bool load_dict(QFile *fp);
 
   // Given a LmaNodeLE0 node, extract the lemmas specified by it, and fill
   // them into the lpi_items buffer.

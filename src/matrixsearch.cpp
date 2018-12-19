@@ -169,6 +169,29 @@ bool MatrixSearch::init_fd(int sys_fd, long start_offset, long length,
   return true;
 }
 
+void MatrixSearch::init_user_dictionary(const char *fn_usr_dict) {
+  assert(inited_);
+
+  if (NULL != user_dict_) {
+    delete user_dict_;
+    user_dict_ = NULL;
+  }
+
+  if (NULL != fn_usr_dict) {
+    user_dict_ = static_cast<AtomDictBase*>(new UserDict());
+    if (!user_dict_->load_dict(fn_usr_dict, kUserDictIdStart, kUserDictIdEnd)) {
+      delete user_dict_;
+      user_dict_ = NULL;
+    }
+  }
+
+  reset_search0();
+}
+
+bool MatrixSearch::is_user_dictionary_enabled() const {
+  return NULL != user_dict_;
+}
+
 void MatrixSearch::set_max_lens(size_t max_sps_len, size_t max_hzs_len) {
   if (0 != max_sps_len)
     max_sps_len_ = max_sps_len;
@@ -848,7 +871,7 @@ size_t MatrixSearch::choose(size_t cand_id) {
 
   PoolPosType step_to_dmi_fr = match_dmi(step_to,
                                          spl_id_ + fixed_hzs_, cand_len);
-  assert(step_to_dmi_fr != static_cast<PoolPosType>(-1));
+  //assert(step_to_dmi_fr != static_cast<PoolPosType>(-1));
 
   extend_mtrx_nd(matrix_[step_fr].mtrx_nd_fixed, &lpi_item, 1,
                  step_to_dmi_fr, step_to);
@@ -1702,7 +1725,7 @@ size_t MatrixSearch::get_lpis(const uint16* splid_str, size_t splid_str_len,
     LmaPsbStrItem *lpsis = reinterpret_cast<LmaPsbStrItem*>(lma_buf + num);
     size_t lpsi_num = (max_lma_buf - num) * sizeof(LmaPsbItem) /
         sizeof(LmaPsbStrItem);
-    assert(lpsi_num > num);
+    //assert(lpsi_num > num);
     if (num > lpsi_num) num = lpsi_num;
     lpsi_num = num;
 

@@ -19,6 +19,10 @@
 #include <assert.h>
 #include "dictdef.h"
 
+#ifdef _WIN32
+#define snprintf _snprintf
+#endif
+
 #ifdef ___BUILD_MODEL___
 #include "spellingtable.h"
 #endif
@@ -343,7 +347,7 @@ bool SpellingTrie::construct(const char* spelling_arr, size_t item_size,
 
 #ifdef ___BUILD_MODEL___
   if (kPrintDebug0) {
-    printf("---SpellingTrie Nodes: %d\n", node_num_);
+    printf("---SpellingTrie Nodes: %d\n", (int)node_num_);
   }
   return build_ym_info();
 #else
@@ -435,7 +439,7 @@ SpellingNode* SpellingTrie::construct_spellings_subset(
 
   const char *spelling_last_start = spelling_buf_ + spelling_size_ * item_start;
   char char_for_node = spelling_last_start[level];
-  assert(char_for_node >= 'A' && char_for_node <= 'Z' ||
+  assert((char_for_node >= 'A' && char_for_node <= 'Z') ||
          'h' == char_for_node);
 
   // Scan the array to find how many sons
@@ -659,20 +663,20 @@ bool SpellingTrie::save_spl_trie(FILE *fp) {
   return true;
 }
 
-bool SpellingTrie::load_spl_trie(FILE *fp) {
+bool SpellingTrie::load_spl_trie(QFile *fp) {
   if (NULL == fp)
     return false;
 
-  if (fread(&spelling_size_, sizeof(uint32), 1, fp) != 1)
+  if (fp->read((char *)&spelling_size_, sizeof(uint32)) != sizeof(uint32))
     return false;
 
-  if (fread(&spelling_num_, sizeof(uint32), 1, fp) != 1)
+  if (fp->read((char *)&spelling_num_, sizeof(uint32)) != sizeof(uint32))
     return false;
 
-  if (fread(&score_amplifier_, sizeof(float), 1, fp) != 1)
+  if (fp->read((char *)&score_amplifier_, sizeof(float)) != sizeof(float))
     return false;
 
-  if (fread(&average_score_, sizeof(unsigned char), 1, fp) != 1)
+  if (fp->read((char *)&average_score_, sizeof(unsigned char)) != sizeof(unsigned char))
     return false;
 
   if (NULL != spelling_buf_)
@@ -682,8 +686,7 @@ bool SpellingTrie::load_spl_trie(FILE *fp) {
   if (NULL == spelling_buf_)
     return false;
 
-  if (fread(spelling_buf_, sizeof(char) * spelling_size_,
-            spelling_num_, fp) != spelling_num_)
+  if (fp->read((char *)spelling_buf_, spelling_size_ * spelling_num_) != spelling_size_ * spelling_num_)
     return false;
 
   return construct(spelling_buf_, spelling_size_, spelling_num_,

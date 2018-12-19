@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "./dictdef.h"
+#include <QFile>
 
 namespace ime_pinyin {
 
@@ -63,10 +64,10 @@ class SpellingTrie {
   // so spelling_size_ is 8.
   // Structure: The string ended with '\0' + score char.
   // An item with a lower score has a higher probability.
-  size_t spelling_size_;
+  uint32 spelling_size_;
 
   // Number of full spelling ids.
-  size_t spelling_num_;
+  uint32 spelling_num_;
 
   float score_amplifier_;
   unsigned char average_score_;
@@ -233,7 +234,7 @@ class SpellingTrie {
   bool save_spl_trie(FILE *fp);
 
   // Load from the file stream
-  bool load_spl_trie(FILE *fp);
+  bool load_spl_trie(QFile *fp);
 
   // Get the number of spellings
   size_t get_spelling_num();

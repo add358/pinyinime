@@ -33,7 +33,7 @@ class DictList {
   const SpellingTrie *spl_trie_;
 
   // Number of SingCharItem. The first is blank, because id 0 is invalid.
-  size_t scis_num_;
+  uint32 scis_num_;
   char16 *scis_hz_;
   SpellingId *scis_splid_;
 
@@ -80,7 +80,7 @@ class DictList {
   ~DictList();
 
   bool save_list(FILE *fp);
-  bool load_list(FILE *fp);
+  bool load_list(QFile *fp);
 
 #ifdef ___BUILD_MODEL___
   // Init the list from the LemmaEntry array.
